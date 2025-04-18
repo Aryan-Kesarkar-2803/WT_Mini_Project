@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.2.1/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .form-input {
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+        .form-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+        }
+        .form-button:hover {
+            background-color: #45a049;
+        }
+        .category {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+        .bmi-result {
+            font-size: 2em;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .history-table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .history-table th, .history-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        .history-table th {
+            background-color: #f2f2f2;
+        }
+        .reset-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+        }
+        .reset-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center text-xl font-semibold mb-4">BMI Calculator</h2>
+        <form action="BMICalculatorServlet" method="post" id="bmiForm">
+            <div class="mb-4">
+                <label for="weight" class="block">Weight (kg):</label>
+                <input type="number" name="weight" id="weight" class="form-input" required step="0.1" placeholder="Enter your weight">
+            </div>
+            <div class="mb-4">
+                <label for="height" class="block">Height (m):</label>
+                <input type="number" name="height" id="height" class="form-input" required step="0.01" placeholder="Enter your height">
+            </div>
+            <div class="mb-4">
+                <label for="age" class="block">Age:</label>
+                <input type="number" name="age" id="age" class="form-input" required placeholder="Enter your age">
+            </div>
+            <div class="mb-4">
+                <label for="gender" class="block">Gender:</label>
+                <select name="gender" id="gender" class="form-input" required>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <button type="submit" class="form-button">Calculate BMI</button>
+        </form>
+
+        <div id="bmiResult" class="text-center mt-6 hidden">
+            <div class="bmi-result" id="resultValue"></div>
+            <div class="category" id="category"></div>
+        </div>
+
+        <div id="bmiHistory" class="hidden mt-6">
+            <h3 class="text-center text-xl font-semibold">BMI History</h3>
+            <table class="history-table" id="historyTable">
+                <thead>
+                    <tr>
+                        <th>BMI</th>
+                        <th>Category</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        
+        <button class="reset-btn mt-4 hidden" onclick="window.location.href='index.html'">Reset</button>
+    </div>
+
+    <script>
+        const bmiForm = document.getElementById('bmiForm');
+        const bmiResultDiv = document.getElementById('bmiResult');
+        const bmiHistoryDiv = document.getElementById('bmiHistory');
+        const resetButton = document.querySelector('.reset-btn');
+        const historyTableBody = document.querySelector('#historyTable tbody');
+        
+        bmiForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const age = parseInt(document.getElementById('age').value);
+            const gender = document.getElementById('gender').value;
+            
+            // Calculate BMI
+            const bmi = weight / (height * height);
+            let category = getCategory(bmi);
+
+            // Display BMI result
+            document.getElementById('resultValue').textContent = `Your BMI: ${bmi.toFixed(2)}`;
+            document.getElementById('category').textContent = `Category: ${category}`;
+
+            // Show results and history
+            bmiResultDiv.classList.remove('hidden');
+            resetButton.classList.remove('hidden');
+            
+            // Update BMI History
+            const historyRow = document.createElement('tr');
+            historyRow.innerHTML = `
+                <td>${bmi.toFixed(2)}</td>
+                <td>${category}</td>
+                <td>${age}</td>
+                <td>${gender}</td>
+            `;
+            historyTableBody.appendChild(historyRow);
+
+            bmiHistoryDiv.classList.remove('hidden');
+        });
+
+        function getCategory(bmi) {
+            if (bmi < 18.5) return "Underweight";
+            if (bmi >= 18.5 && bmi < 24.9) return "Normal weight";
+            if (bmi >= 25 && bmi < 29.9) return "Overweight";
+            return "Obesity";
+        }
+    </script>
+</body>
+</html>
