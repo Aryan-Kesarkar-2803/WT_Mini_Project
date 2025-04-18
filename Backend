@@ -1,0 +1,64 @@
+import java.io.IOException;
+import java.io.PrintWriter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+
+@WebServlet("/BMICalculatorServlet")
+public class BMICalculatorServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+
+        double weight = 0;
+        double height = 0;
+        String result = "";
+
+        try {
+            weight = Double.parseDouble(request.getParameter("weight"));
+            height = Double.parseDouble(request.getParameter("height"));
+
+            double bmi = weight / (height * height);
+            String category;
+
+            if (bmi < 18.5)
+                category = "Underweight";
+            else if (bmi < 24.9)
+                category = "Normal weight";
+            else if (bmi < 29.9)
+                category = "Overweight";
+            else
+                category = "Obese";
+
+            result = String.format(
+                "<div class='result-box'><h2>Your BMI is %.2f</h2><p>Category: %s</p></div>", 
+                bmi, category);
+
+        } catch (Exception e) {
+            result = "<div class='result-box error'><p>Invalid input. Please enter valid numbers.</p></div>";
+        }
+
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        // HTML Response
+        out.println("<!DOCTYPE html>");
+        out.println("<html><head><meta charset='UTF-8'><title>BMI Result</title>");
+        out.println("<style>");
+        out.println("body { font-family: Arial; text-align: center; margin-top: 50px; }");
+        out.println(".result-box { background: #f0f0f0; padding: 20px; display: inline-block; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.2); }");
+        out.println(".error { background: #ffcccc; }");
+        out.println("a { display: inline-block; margin-top: 20px; text-decoration: none; color: #007BFF; }");
+        out.println("</style></head><body>");
+
+        out.println(result);
+        out.println("<br><a href='index.html'>Go Back</a>");
+        out.println("</body></html>");
+    }
+}
+
