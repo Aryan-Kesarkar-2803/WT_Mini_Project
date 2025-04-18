@@ -1,4 +1,4 @@
-#BMI Calculator 
+# BMI Calculator 
 A simple and interactive Body Mass Index (BMI) calculator web application built using:
 
 Java Servlets (Backend)
